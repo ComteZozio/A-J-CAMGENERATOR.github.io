@@ -117,6 +117,41 @@
     text-align: right;
   }
 
+  .slider-val-group {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+
+  .slider-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    width: 62px;
+    text-align: right;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 1px 3px;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  .slider-num::-webkit-inner-spin-button,
+  .slider-num::-webkit-outer-spin-button { opacity: 0.4; }
+
+  .slider-num:hover { border-bottom-color: var(--border2); }
+  .slider-num:focus { border-bottom-color: var(--accent2); }
+
+  .slider-unit {
+    font-size: 12px;
+    color: var(--text3);
+    user-select: none;
+  }
+
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -396,7 +431,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Multiplicateur (× valeurs)</span>
-          <span class="slider-val" id="ratio-out">1.00 ×</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="ratio-num" min="0.1" max="20" step="0.01" value="1">
+            <span class="slider-unit">×</span>
+          </div>
         </div>
         <input type="range" id="ratio" min="0.1" max="20" step="0.01" value="1">
       </div>
@@ -404,7 +442,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Offset additif (+ à chaque valeur)</span>
-          <span class="slider-val" id="offset-out">0.0°</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="offset-num" min="-20" max="20" step="0.1" value="0">
+            <span class="slider-unit">°</span>
+          </div>
         </div>
         <input type="range" id="offset" min="-20" max="20" step="0.1" value="0">
       </div>
@@ -415,7 +456,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Rayon du galet</span>
-          <span class="slider-val" id="rgalet-out">2.0 mm</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="rgalet-num" min="0" max="10" step="0.5" value="2">
+            <span class="slider-unit">mm</span>
+          </div>
         </div>
         <input type="range" id="rgalet" min="0" max="10" step="0.5" value="2">
       </div>
@@ -423,7 +467,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">R_OA = R_AB</span>
-          <span class="slider-val" id="roa-out">93.5 mm</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="roa-num" min="30" max="200" step="0.5" value="93.47">
+            <span class="slider-unit">mm</span>
+          </div>
         </div>
         <input type="range" id="roa" min="30" max="200" step="0.5" value="93.47">
       </div>
@@ -444,7 +491,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Angle came</span>
-          <span class="slider-val" id="cam-angle-out">0°</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="cam-angle-num" min="0" max="359" step="1" value="0">
+            <span class="slider-unit">°</span>
+          </div>
         </div>
         <input type="range" id="cam-angle" min="0" max="359" step="1" value="0">
       </div>
@@ -452,7 +502,10 @@
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Zoom</span>
-          <span class="slider-val" id="zoom-out">1.0 ×</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="zoom-num" min="0.3" max="5" step="0.05" value="1">
+            <span class="slider-unit">×</span>
+          </div>
         </div>
         <input type="range" id="zoom" min="0.3" max="5" step="0.05" value="1">
       </div>
@@ -477,6 +530,10 @@
         <div class="stat">
           <div class="stat-label">R_courbure min</div>
           <div class="stat-val" id="rcmin">—</div>
+        </div>
+        <div class="stat" style="grid-column: span 2;">
+          <div class="stat-label">Angle AB ∧ AO (position courante)</div>
+          <div class="stat-val" id="angle-abao" style="font-size:15px">—</div>
         </div>
       </div>
 
@@ -710,15 +767,15 @@ function render() {
   const galetInt  = document.getElementById('galet-int').checked;
   const showCtr   = document.getElementById('show-center').checked;
 
-  // Mise à jour labels sliders
-  document.getElementById('ratio-out').textContent  = ratio.toFixed(2) + ' ×';
-  document.getElementById('offset-out').textContent = offsetDeg.toFixed(1) + '°';
-  document.getElementById('rgalet-out').textContent = rGalet.toFixed(1) + ' mm';
-  document.getElementById('roa-out').textContent    = ROA.toFixed(1) + ' mm';
+  // Mise à jour labels sliders (inputs numériques)
+  document.getElementById('ratio-num').value    = ratio.toFixed(2);
+  document.getElementById('offset-num').value   = offsetDeg.toFixed(1);
+  document.getElementById('rgalet-num').value   = rGalet.toFixed(1);
+  document.getElementById('roa-num').value      = ROA.toFixed(1);
   const camAngleDeg0 = parseFloat(document.getElementById('cam-angle').value);
-  document.getElementById('cam-angle-out').textContent = camAngleDeg0.toFixed(0) + '°';
+  document.getElementById('cam-angle-num').value = camAngleDeg0.toFixed(0);
   const zoom = parseFloat(document.getElementById('zoom').value);
-  document.getElementById('zoom-out').textContent = zoom.toFixed(2) + ' ×';
+  document.getElementById('zoom-num').value     = zoom.toFixed(2);
 
   const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
 
@@ -730,6 +787,22 @@ function render() {
   rcEl.textContent = isFinite(p.Rmin) ? p.Rmin.toFixed(2) + ' mm' : '∞';
   rcEl.className   = 'stat-val' + (p.Rmin < rGalet ? ' warn' : '');
   document.getElementById('warn-banner').classList.toggle('visible', p.Rmin < rGalet);
+
+  // Angle AB ∧ AO à l'angle came courant
+  {
+    const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
+    const tCurTmp = (camAngleDeg / 360) * 2 * Math.PI;
+    const iCurTmp = Math.round((tCurTmp / (2 * Math.PI)) * p.M) % p.M;
+    const ax = p.AxArr[iCurTmp], ay = p.AyArr[iCurTmp];
+    const bx = p.Bx[iCurTmp],   by = p.By[iCurTmp];
+    // Vecteurs partant de A
+    const aoX = -ax, aoY = -ay;            // AO = O - A
+    const abX = bx - ax, abY = by - ay;    // AB = B - A
+    const dot   = aoX*abX + aoY*abY;
+    const cross = aoX*abY - aoY*abX;
+    const angleDeg = Math.atan2(cross, dot) * 180 / Math.PI;
+    document.getElementById('angle-abao').textContent = angleDeg.toFixed(2) + '°';
+  }
 
   // ── Dessin ──────────────────────────────────────────────────────────────
   const W = canvas.width, H = canvas.height;
@@ -1083,9 +1156,32 @@ document.getElementById('export-csv').addEventListener('click', () => {
 });
 
 // ─── Init ──────────────────────────────────────────────────────────────────
-['ratio','offset','rgalet','roa','cam-angle','zoom'].forEach(id =>
-  document.getElementById(id).addEventListener('input', render)
-);
+// ─── Synchronisation sliders ↔ inputs numériques ──────────────────────────
+function linkSliderNum(sliderId) {
+  const slider = document.getElementById(sliderId);
+  const num    = document.getElementById(sliderId + '-num');
+  if (!slider || !num) return;
+
+  slider.addEventListener('input', () => {
+    num.value = slider.value;
+    render();
+  });
+
+  const applyNum = () => {
+    let v = parseFloat(num.value);
+    if (isNaN(v)) return;
+    v = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), v));
+    slider.value = v;
+    num.value = v;
+    render();
+  };
+
+  num.addEventListener('change', applyNum);
+  num.addEventListener('keydown', e => { if (e.key === 'Enter') { applyNum(); num.blur(); } });
+}
+
+['ratio','offset','rgalet','roa','cam-angle','zoom'].forEach(linkSliderNum);
+
 ['galet-int','show-center'].forEach(id =>
   document.getElementById(id).addEventListener('change', render)
 );
