@@ -492,6 +492,14 @@
       </svg>
       Exporter profil SVG
     </button>
+    <button class="export-btn" id="export-png">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="2" width="12" height="12" rx="2"/>
+        <circle cx="5.5" cy="5.5" r="1.5"/>
+        <path d="M2 11l3-3 4 4 2-2 3 3"/>
+      </svg>
+      Exporter Image PNG (HQ)
+    </button>
     <button class="export-btn" id="export-csv">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M2 11v3h12v-3M8 2v8M5 7l3 3 3-3"/>
@@ -499,6 +507,7 @@
       Exporter CSV (profil FAO)
     </button>
   </div>
+
 
   <!-- Zone de dessin -->
   <div class="canvas-panel">
@@ -609,7 +618,7 @@ function computeProfile(params) {
   const BxC = new Float64Array(M), ByC = new Float64Array(M);
   const PxC = new Float64Array(M), PyC = new Float64Array(M);
   const AxArr = new Float64Array(M), AyArr = new Float64Array(M);
-  const dt = 0.01;
+  const dt = 0.05;
   let Rmin = Infinity;
 
   for (let i = 0; i < M; i++) {
@@ -784,8 +793,8 @@ function render() {
   }
 
   // ── Profils came (centre galet bleu + profil usinable rouge) ───────────
-  if (showCtr) drawPoly(sc, p.Bx, p.By, cAccent, 1.5 * dpr);
-  drawPoly(sc, p.Px, p.Py, cProfile, 2.2 * dpr);
+  if (showCtr) drawPoly(sc, p.Bx, p.By, cAccent, 1 * dpr);
+  drawPoly(sc, p.Px, p.Py, cProfile, 1 * dpr);
 
   // ── Levier à l'angle courant ────────────────────────────────────────────
   const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
@@ -799,7 +808,7 @@ function render() {
 
   // Bras de manivelle O→A (pointillés fins)
   ctx.strokeStyle = cCrank;
-  ctx.lineWidth   = 1.8 * dpr;
+  ctx.lineWidth   = 1 * dpr;
   ctx.lineCap     = 'round';
   ctx.setLineDash([5*dpr, 4*dpr]);
   ctx.beginPath(); ctx.moveTo(ox0, oy0); ctx.lineTo(axS, ayS); ctx.stroke();
@@ -807,22 +816,22 @@ function render() {
 
   // Bras palpeur A→B (levier — trait plein épais)
   ctx.strokeStyle = cLever;
-  ctx.lineWidth   = 3 * dpr;
+  ctx.lineWidth   = 1 * dpr;
   ctx.beginPath(); ctx.moveTo(axS, ayS); ctx.lineTo(bxS, byS); ctx.stroke();
 
   // Galet (cercle au point B)
   if (rGalet > 0) {
     const rPx = rGalet * sc.sc;
     ctx.strokeStyle = cLever;
-    ctx.lineWidth = 2 * dpr;
+    ctx.lineWidth = 1 * dpr;
     ctx.beginPath(); ctx.arc(bxS, byS, rPx, 0, 2*Math.PI); ctx.stroke();
   }
 
   // Pivots : O (pivot fixe), A (pivot intermédiaire), B (centre galet)
   const pivotDef = [
-    { pos: [0, 0],   r: 5*dpr, fill: dotColor,  stroke: null },
-    { pos: [axC,ayC],r: 4*dpr, fill: cCrank,    stroke: null },
-    { pos: [bxC,byC],r: 4*dpr, fill: cLever,    stroke: null },
+    { pos: [0, 0],   r: 2*dpr, fill: dotColor,  stroke: null },
+    { pos: [axC,ayC],r: 2*dpr, fill: cCrank,    stroke: null },
+    { pos: [bxC,byC],r: 2*dpr, fill: cLever,    stroke: null },
   ];
   pivotDef.forEach(({ pos, r, fill }) => {
     const [sx, sy] = toS(pos[0], pos[1]);
@@ -837,7 +846,6 @@ function render() {
   ctx.fillText('O', ox0 + 7*dpr, oy0 - 4*dpr);
   ctx.fillText('A', axS + 6*dpr, ayS - 4*dpr);
   ctx.fillStyle = cLever;
-  ctx.fillText('B (galet)', bxS + 6*dpr, byS - 4*dpr);
 
   // Échelle graphique
   drawScaleBar(sc, W, H, pad, dpr, isDark);
@@ -917,6 +925,116 @@ document.getElementById('export-svg').addEventListener('click', () => {
   a.download = 'trace_rouge_fixe.svg';
   a.click();
   URL.revokeObjectURL(url);
+});
+// ─── Export PNG Haute Qualité avec mécanisme complet ──────────────────────
+document.getElementById('export-png').addEventListener('click', () => {
+  const scaleFactor = 4; 
+  const offCanvas = document.createElement('canvas');
+  const offCtx = offCanvas.getContext('2d');
+  
+  offCanvas.width = canvas.width * scaleFactor;
+  offCanvas.height = canvas.height * scaleFactor;
+  
+  const ratio = parseFloat(document.getElementById('ratio').value);
+  const offsetDeg = parseFloat(document.getElementById('offset').value);
+  const rGalet = parseFloat(document.getElementById('rgalet').value);
+  const ROA = parseFloat(document.getElementById('roa').value);
+  const galetInt = document.getElementById('galet-int').checked;
+  const showCtr = document.getElementById('show-center').checked;
+  const zoom = parseFloat(document.getElementById('zoom').value);
+  const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
+  
+  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
+  const W = offCanvas.width, H = offCanvas.height;
+  const dpr = devicePixelRatio * scaleFactor;
+  
+  // Fond blanc
+  offCtx.fillStyle = "#FFFFFF";
+  offCtx.fillRect(0, 0, W, H);
+  
+  const pad = 44 * dpr;
+  const allX = [...p.Bx, ...p.Px, ...p.AxArr, 0];
+  const allY = [...p.By, ...p.Py, ...p.AyArr, 0];
+  
+  const minX = Math.min(...allX), maxX = Math.max(...allX);
+  const minY = Math.min(...allY), maxY = Math.max(...allY);
+  const rX = maxX - minX || 1, rY = maxY - minY || 1;
+  const baseSc = Math.min((W - 2*pad) / rX, (H - 2*pad) / rY) * zoom;
+  
+  const sc = { sc: baseSc, cx: (minX+maxX)/2, cy: (minY+maxY)/2, ox: W/2, oy: H/2 };
+  const toS = (x, y) => [sc.ox + (x - sc.cx) * sc.sc, sc.oy - (y - sc.cy) * sc.sc];
+
+  // Couleurs export
+  const cAccent = '#378ADD';
+  const cProfile = '#D85A30';
+  const cLever = '#1E8A42';
+  const cCrank = '#666666';
+
+  // 1. Profils de la came
+  const drawPolyOff = (xs, ys, color, lw) => {
+    offCtx.beginPath();
+    for (let i = 0; i < xs.length; i++) {
+      const [sx, sy] = toS(xs[i], ys[i]);
+      i === 0 ? offCtx.moveTo(sx, sy) : offCtx.lineTo(sx, sy);
+    }
+    offCtx.closePath();
+    offCtx.strokeStyle = color;
+    offCtx.lineWidth = lw * scaleFactor;
+    offCtx.stroke();
+  };
+
+  if (showCtr) drawPolyOff(p.Bx, p.By, cAccent, 1);
+  drawPolyOff(p.Px, p.Py, cProfile, 1.5);
+
+  // 2. Dessin du mécanisme à l'angle choisi
+  const tCur = (camAngleDeg / 360) * 2 * Math.PI;
+  const iCur = Math.round((tCur / (2 * Math.PI)) * p.M) % p.M;
+  const [oxS, oyS] = toS(0, 0);
+  const [axS, ayS] = toS(p.AxArr[iCur], p.AyArr[iCur]);
+  const [bxS, byS] = toS(p.Bx[iCur], p.By[iCur]);
+
+  // Bras OA (Manivelle)
+  offCtx.setLineDash([1 * scaleFactor, 1 * scaleFactor]);
+  offCtx.strokeStyle = cCrank;
+  offCtx.lineWidth = 1 * scaleFactor;
+  offCtx.beginPath(); offCtx.moveTo(oxS, oyS); offCtx.lineTo(axS, ayS); offCtx.stroke();
+  offCtx.setLineDash([]);
+
+  // Bras AB (Levier)
+  offCtx.strokeStyle = cLever;
+  offCtx.lineWidth = 1 * scaleFactor;
+  offCtx.beginPath(); offCtx.moveTo(axS, ayS); offCtx.lineTo(bxS, byS); offCtx.stroke();
+
+  // Galet
+  if (rGalet > 0) {
+    offCtx.beginPath();
+    offCtx.arc(bxS, byS, rGalet * sc.sc, 0, 2 * Math.PI);
+    offCtx.stroke();
+  }
+
+  // Points pivots (O, A, B)
+  const drawPoint = (x, y, color, r) => {
+    offCtx.fillStyle = color;
+    offCtx.beginPath();
+    offCtx.arc(x, y, r * scaleFactor, 0, 2 * Math.PI);
+    offCtx.fill();
+  };
+  drawPoint(oxS, oyS, "#000000", 2); // Centre O
+  drawPoint(axS, ayS, cCrank, 2);   // Pivot A
+  drawPoint(bxS, byS, cLever, 2);   // Centre galet B
+
+  // 3. Échelle et Labels
+  drawScaleBar(sc, W, H, pad, dpr, false);
+  
+  offCtx.fillStyle = "#666666";
+  offCtx.font = `${12 * scaleFactor}px Arial`;
+  offCtx.fillText("O", oxS + 8, oyS - 8);
+
+  // Téléchargement
+  const link = document.createElement('a');
+  link.download = `came_profil_angle_${camAngleDeg}deg.png`;
+  link.href = offCanvas.toDataURL('image/png');
+  link.click();
 });
 // ─── Export DXF (TRACÉ ROUGE FIXE + ORIGINE) ──────────────────────────────
 document.getElementById('export-csv').innerText = "Exporter DXF (SolidWorks)";
