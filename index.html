@@ -757,7 +757,7 @@ function render() {
   ctx.stroke();
 
   // ── Fantômes du levier toutes les 45° ──────────────────────────────────
-  const nGhost = 8;
+  const nGhost = 12;
   for (let g = 0; g < nGhost; g++) {
     const tg = (g / nGhost) * 2 * Math.PI;
     const ig = Math.round((tg / (2 * Math.PI)) * p.M) % p.M;
@@ -883,7 +883,7 @@ function drawScaleBar(sc, W, H, pad, dpr, isDark) {
   const label = niceMm >= 1 ? `${niceMm} mm` : `${(niceMm * 10).toFixed(1)} mm`;
   ctx.fillText(label, x1, y - tickH - 2 * dpr);
 }
-// ─── Export SVG ───────────────────────────────────────────────────────────
+// ─── Export SVG (TRACÉ ROUGE DU SIMULATEUR - REPÈRE FIXE) ─────────────────
 document.getElementById('export-svg').addEventListener('click', () => {
   const ratio = parseFloat(document.getElementById('ratio').value);
   const offsetDeg = parseFloat(document.getElementById('offset').value);
@@ -893,40 +893,73 @@ document.getElementById('export-svg').addEventListener('click', () => {
   
   const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
   
-  // Construction du chemin SVG (Path)
-  let pathD = `M ${p.PxC[0].toFixed(3)} ${p.PyC[0].toFixed(3)}`;
-  for (let i = 1; i < p.PxC.length; i++) {
-    pathD += ` L ${p.PxC[i].toFixed(3)} ${p.PyC[i].toFixed(3)}`;
+  // On utilise p.Px et p.Py pour le repère fixe
+  let pathD = `M ${p.Px[0].toFixed(3)} ${p.Py[0].toFixed(3)}`;
+  for (let i = 1; i < p.Px.length; i++) {
+    pathD += ` L ${p.Px[i].toFixed(3)} ${p.Py[i].toFixed(3)}`;
   }
   pathD += " Z";
 
+  // Note : On inverse le signe de Y dans le SVG (Py) car l'axe Y du SVG pointe vers le bas
+  // Pour que le dessin soit identique à l'écran, on applique une transformation
   const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300">
-    <path d="${pathD}" fill="none" stroke="black" stroke-width="0.5"/>
-    <circle cx="0" cy="0" r="2" fill="red" /> </svg>`;
+    <g transform="scale(1, -1)"> <path d="${pathD}" fill="none" stroke="#D85A30" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="black" />
+      <circle cx="${ROA}" cy="0" r="1.5" fill="green" opacity="0.5" />
+    </g>
+    <text x="5" y="15" font-family="sans-serif" font-size="5" fill="black">Origine O</text>
+  </svg>`;
 
   const blob = new Blob([svgContent], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'profil_came.svg';
+  a.href = url; 
+  a.download = 'trace_rouge_fixe.svg';
   a.click();
+  URL.revokeObjectURL(url);
 });
-// ─── Export CSV ───────────────────────────────────────────────────────────
+// ─── Export DXF (TRACÉ ROUGE FIXE + ORIGINE) ──────────────────────────────
+document.getElementById('export-csv').innerText = "Exporter DXF (SolidWorks)";
+
 document.getElementById('export-csv').addEventListener('click', () => {
   const ratio     = parseFloat(document.getElementById('ratio').value);
   const offsetDeg = parseFloat(document.getElementById('offset').value);
   const rGalet    = parseFloat(document.getElementById('rgalet').value);
   const ROA       = parseFloat(document.getElementById('roa').value);
   const galetInt  = document.getElementById('galet-int').checked;
+  
   const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
 
-  let csv = 'X_centre_mm,Y_centre_mm,X_offset_mm,Y_offset_mm\n';
-  for (let i = 0; i < p.BxC.length; i++) {
-    csv += `${p.BxC[i].toFixed(6)},${p.ByC[i].toFixed(6)},${p.PxC[i].toFixed(6)},${p.PyC[i].toFixed(6)}\n`;
+  // Entête standard DXF
+  let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
+
+  // 1. AJOUT DU POINT D'ORIGINE (Cercle de rayon 1mm à 0,0)
+  dxf += "0\nCIRCLE\n8\nAXE_ROTATION\n"; // Sur un calque nommé AXE_ROTATION
+  dxf += "10\n0.0\n"; // X centre
+  dxf += "20\n0.0\n"; // Y centre
+  dxf += "30\n0.0\n"; // Z centre
+  dxf += "40\n1.0\n"; // Rayon (1mm)
+
+  // 2. TRACÉ DU PROFIL ROUGE (Px, Py)
+  for (let i = 0; i < p.Px.length; i++) {
+    const next = (i + 1) % p.Px.length;
+    dxf += "0\nLINE\n8\nPROFIL_ROUGE\n"; // Sur un calque nommé PROFIL_ROUGE
+    dxf += `10\n${p.Px[i].toFixed(4)}\n`;   // X départ
+    dxf += `20\n${(-p.Py[i]).toFixed(4)}\n`; // Y départ (inversé pour correspondre au visuel)
+    dxf += `30\n0.0\n`;
+    dxf += `11\n${p.Px[next].toFixed(4)}\n`; // X arrivée
+    dxf += `21\n${(-p.Py[next]).toFixed(4)}\n`; // Y arrivée
+    dxf += `31\n0.0\n`;
   }
-  const blob = new Blob([csv], { type: 'text/csv' });
+
+  // Pied de page DXF
+  dxf += "0\nENDSEC\n0\nEOF";
+
+  const blob = new Blob([dxf], { type: 'application/dxf' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url; a.download = 'profil_came_fao.csv';
+  a.href = url;
+  a.download = 'profil_fixe_avec_origine.dxf';
   a.click();
   URL.revokeObjectURL(url);
 });
