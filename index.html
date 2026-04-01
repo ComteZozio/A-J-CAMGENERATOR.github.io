@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Concepteur de came</title>
- 
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   :root {
     --bg: #f5f4f0;
     --surface: #ffffff;
@@ -23,7 +23,7 @@
     --radius: 10px;
     --radius-sm: 6px;
   }
- 
+
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #18181a;
@@ -39,7 +39,7 @@
       --danger: #F09595;
     }
   }
- 
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -49,7 +49,7 @@
     min-height: 100vh;
     padding: 2rem 1.5rem;
   }
- 
+
   h1 {
     font-size: 20px;
     font-weight: 600;
@@ -57,13 +57,13 @@
     color: var(--text);
     margin-bottom: 0.25rem;
   }
- 
+
   .subtitle {
     font-size: 13px;
     color: var(--text3);
     margin-bottom: 1.75rem;
   }
- 
+
   .layout {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -71,18 +71,18 @@
     max-width: 1200px;
     margin: 0 auto;
   }
- 
+
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; }
   }
- 
+
   .panel {
     background: var(--surface);
     border: 0.5px solid var(--border);
     border-radius: var(--radius);
     padding: 1.25rem;
   }
- 
+
   .panel-title {
     font-size: 11px;
     font-weight: 600;
@@ -93,21 +93,21 @@
     padding-bottom: 0.6rem;
     border-bottom: 0.5px solid var(--border);
   }
- 
+
   .slider-group { margin-bottom: 1.1rem; }
- 
+
   .slider-header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 5px;
   }
- 
+
   .slider-label {
     font-size: 13px;
     color: var(--text2);
   }
- 
+
   .slider-val {
     font-size: 13px;
     font-weight: 600;
@@ -116,13 +116,13 @@
     min-width: 60px;
     text-align: right;
   }
- 
+
   .slider-val-group {
     display: flex;
     align-items: baseline;
     gap: 3px;
   }
- 
+
   .slider-num {
     font-size: 13px;
     font-weight: 600;
@@ -139,19 +139,19 @@
     transition: border-color 0.15s;
     -moz-appearance: textfield;
   }
- 
+
   .slider-num::-webkit-inner-spin-button,
   .slider-num::-webkit-outer-spin-button { opacity: 0.4; }
- 
+
   .slider-num:hover { border-bottom-color: var(--border2); }
   .slider-num:focus { border-bottom-color: var(--accent2); }
- 
+
   .slider-unit {
     font-size: 12px;
     color: var(--text3);
     user-select: none;
   }
- 
+
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -162,7 +162,7 @@
     outline: none;
     cursor: pointer;
   }
- 
+
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
@@ -174,14 +174,14 @@
     cursor: pointer;
     transition: transform 0.1s;
   }
- 
+
   input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   input[type="range"]::-moz-range-thumb {
     width: 16px; height: 16px; border-radius: 50%;
     background: var(--text); border: 2px solid var(--surface);
     box-shadow: 0 0 0 1px var(--border2); cursor: pointer;
   }
- 
+
   .toggle-row {
     display: flex;
     align-items: center;
@@ -189,39 +189,39 @@
     margin-bottom: 0.7rem;
     cursor: pointer;
   }
- 
+
   .toggle-row input[type="checkbox"] {
     width: 15px; height: 15px; cursor: pointer;
     accent-color: var(--text);
   }
- 
+
   .toggle-label { font-size: 13px; color: var(--text2); user-select: none; }
- 
+
   .divider {
     height: 0.5px;
     background: var(--border);
     margin: 1.1rem 0;
   }
- 
+
   .stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 1rem;
   }
- 
+
   .stat {
     background: var(--surface2);
     border-radius: var(--radius-sm);
     padding: 10px 12px;
   }
- 
+
   .stat-label {
     font-size: 11px;
     color: var(--text3);
     margin-bottom: 3px;
   }
- 
+
   .stat-val {
     font-size: 17px;
     font-weight: 600;
@@ -229,9 +229,9 @@
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
- 
+
   .stat-val.warn { color: var(--danger); }
- 
+
   .warn-banner {
     display: none;
     background: rgba(226,75,74,0.1);
@@ -243,9 +243,9 @@
     margin-top: 10px;
     line-height: 1.4;
   }
- 
+
   .warn-banner.visible { display: block; }
- 
+
   .canvas-panel {
     background: var(--surface);
     border: 0.5px solid var(--border);
@@ -254,22 +254,22 @@
     display: flex;
     flex-direction: column;
   }
- 
+
   .canvas-toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
   }
- 
+
   .canvas-toolbar .panel-title { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
- 
+
   .legend {
     display: flex;
     gap: 1rem;
     align-items: center;
   }
- 
+
   .legend-item {
     display: flex;
     align-items: center;
@@ -277,13 +277,13 @@
     font-size: 12px;
     color: var(--text2);
   }
- 
+
   .legend-line {
     width: 22px;
     height: 2px;
     border-radius: 1px;
   }
- 
+
   canvas {
     display: block;
     width: 100%;
@@ -291,19 +291,19 @@
     border-radius: var(--radius-sm);
     background: var(--surface2);
   }
- 
+
   .view-labels {
     display: flex;
     justify-content: space-around;
     margin-top: 8px;
   }
- 
+
   .view-label {
     font-size: 11px;
     color: var(--text3);
     letter-spacing: 0.04em;
   }
- 
+
   .export-btn {
     display: inline-flex;
     align-items: center;
@@ -318,14 +318,14 @@
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
- 
+
   .export-btn:hover {
     background: var(--surface2);
     color: var(--text);
   }
- 
+
   .export-btn svg { width: 14px; height: 14px; }
- 
+
   .data-panel {
     background: var(--surface);
     border: 0.5px solid var(--border);
@@ -336,14 +336,14 @@
     margin-left: auto;
     margin-right: auto;
   }
- 
+
   .data-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.75rem;
   }
- 
+
   textarea#data-input {
     width: 100%;
     height: 90px;
@@ -359,32 +359,32 @@
     outline: none;
     transition: border-color 0.15s;
   }
- 
+
   textarea#data-input:focus { border-color: var(--border2); }
   textarea#data-input.error { border-color: var(--danger); }
- 
+
   .data-info {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-top: 6px;
   }
- 
+
   .data-count {
     font-size: 12px;
     color: var(--text3);
   }
- 
+
   .data-count span { color: var(--text2); font-weight: 600; }
- 
+
   .data-err {
     font-size: 12px;
     color: var(--danger);
     display: none;
   }
- 
+
   .data-err.visible { display: block; }
- 
+
   .apply-btn {
     padding: 5px 14px;
     background: var(--text);
@@ -396,7 +396,7 @@
     cursor: pointer;
     transition: opacity 0.15s;
   }
- 
+
   .apply-btn:hover { opacity: 0.8; }
 </style>
 </head>
@@ -408,7 +408,7 @@
 </div>
 <h1>Concepteur de came</h1>
 <p class="subtitle">Profil calculé depuis les valeurs delta_deg — multiplicateur, offset et galet réglables</p>
- 
+
 <div class="data-panel">
   <div class="data-header">
     <div class="panel-title" style="margin:0;padding:0;border:none;">Données d'entrée — tableau delta_deg</div>
@@ -420,14 +420,14 @@
     <div class="data-err" id="data-err">Valeurs non valides détectées — vérifiez le format.</div>
   </div>
 </div>
- 
+
 <div class="layout">
- 
+
   <!-- Panneau de contrôle -->
   <div>
     <div class="panel">
       <div class="panel-title">Transmission & offset</div>
- 
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Multiplicateur (× valeurs)</span>
@@ -438,7 +438,7 @@
         </div>
         <input type="range" id="ratio" min="0.1" max="20" step="0.01" value="1">
       </div>
- 
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Offset additif (+ à chaque valeur)</span>
@@ -449,10 +449,10 @@
         </div>
         <input type="range" id="offset" min="-20" max="20" step="0.1" value="0">
       </div>
- 
+
       <div class="divider"></div>
       <div class="panel-title" style="margin-top:0">Géométrie du galet</div>
- 
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Rayon du galet</span>
@@ -463,7 +463,7 @@
         </div>
         <input type="range" id="rgalet" min="0" max="10" step="0.5" value="2">
       </div>
- 
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">R_OA = R_AB</span>
@@ -474,20 +474,20 @@
         </div>
         <input type="range" id="roa" min="30" max="200" step="0.5" value="93.47">
       </div>
- 
+
       <label class="toggle-row">
         <input type="checkbox" id="galet-int">
         <span class="toggle-label">Galet intérieur</span>
       </label>
- 
+
       <label class="toggle-row">
         <input type="checkbox" id="show-center" checked>
         <span class="toggle-label">Afficher trajectoire centre galet</span>
       </label>
- 
+
       <div class="divider"></div>
       <div class="panel-title" style="margin-top:0">Position du levier</div>
- 
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Angle came</span>
@@ -498,7 +498,18 @@
         </div>
         <input type="range" id="cam-angle" min="0" max="359" step="1" value="0">
       </div>
- 
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Phase came (rotation propre)</span>
+          <div class="slider-val-group">
+            <input type="number" class="slider-num" id="phase-cam-num" min="-180" max="180" step="0.5" value="0">
+            <span class="slider-unit">°</span>
+          </div>
+        </div>
+        <input type="range" id="phase-cam" min="-180" max="180" step="0.5" value="0">
+      </div>
+
       <div class="slider-group">
         <div class="slider-header">
           <span class="slider-label">Zoom</span>
@@ -509,11 +520,11 @@
         </div>
         <input type="range" id="zoom" min="0.3" max="5" step="0.05" value="1">
       </div>
- 
+
       <div class="divider"></div>
- 
+
       <div class="panel-title" style="margin-top:0">Diagnostics</div>
- 
+
       <div class="stats">
         <div class="stat">
           <div class="stat-label">Delta min</div>
@@ -536,13 +547,13 @@
           <div class="stat-val" id="angle-abao" style="font-size:15px">—</div>
         </div>
       </div>
- 
+
       <div class="warn-banner" id="warn-banner">
         ⚠ Interférence : R_courbure min &lt; r_galet.<br>
         Réduisez le rayon du galet ou l'offset.
       </div>
     </div>
- 
+
     <button class="export-btn" id="export-svg">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 2H4v12h8V2zM4 6h8M4 10h8"/>
@@ -564,8 +575,8 @@
       Exporter CSV (profil FAO)
     </button>
   </div>
- 
- 
+
+
   <!-- Zone de dessin -->
   <div class="canvas-panel">
     <div class="canvas-toolbar">
@@ -590,14 +601,14 @@
       <span class="view-label">Repère fixe — cinématique avec levier</span>
     </div>
   </div>
- 
+
 </div>
- 
+
 <script>
 const DEFAULT_DATA = [13.00814299,12.75505913,12.50518451,12.25878378,12.01611558,11.77743214,11.54297892,11.31299424,11.08770893,10.86734601,10.65212037,10.4422385,10.2378982,10.03928838,9.846588768,9.659969767,9.479592235,9.305607348,9.13815645,8.977370944,8.823372176,8.676271409,8.536169732,8.403158038,8.277317037,8.158717237,8.047419012,7.943472615,7.846918293,7.757786342,7.676097231,7.601861723,7.535081016,7.475746905,7.423841944,7.379339654,7.342204675,7.312393038,7.289852324,7.274521949,7.266333373,7.265210352,7.271069206,7.283819069,7.303362178,7.329594099,7.36240407,7.401675203,7.44728484,7.499104758,7.557001515,7.620836692,7.690467167,7.76574542,7.84651977,7.932634669,8.023930962,8.120246125,8.221414543,8.327267746,8.437634651,8.552341796,8.67121357,8.794072433,8.92073912,9.051032859,9.184771555,9.321771992,9.461850004,9.604820662,9.75049842,9.898697293,10.049231,10.20191311,10.35655718,10.51297688,10.67098614,10.83039923,10.99103092,11.15269655,11.31521216,11.47839458,11.64206153,11.80603171,11.9701249,12.13416203,12.29796529,12.46135823,12.62416578,12.78621442,12.94733221,13.10734889,13.266096,13.42340691,13.57911696,13.73306356,13.88508625,14.03502682,14.18272942,14.32804068,14.47080978,14.6108886,14.74813183,14.8823971,15.0135451,15.14143971,15.26594814,15.38694107,15.5042928,15.61788139,15.72758881,15.83330108,15.93490847,16.03230561,16.12539166,16.21407051,16.29825089,16.37784656,16.45277648,16.52296494,16.58834177,16.64884243,16.70440826,16.75498651,16.80053063,16.84100028,16.87636155,16.9065871,16.9316562,16.95155496,16.96627636,16.97582036,16.98019404,16.97941163,16.9734946,16.96247174,16.94637915,16.92526035,16.89916624,16.86815513,16.83229276,16.79165223,16.74631402,16.69636589,16.64190286,16.5830271,16.51984785,16.45248131,16.38105051,16.30568517,16.22652155,16.14370224,16.05737606,15.96769776,15.87482786,15.77893243,15.68018278,15.57875529,15.47483108,15.36859574,15.26023905,15.14995468,15.03793985,14.92439501,14.80952356,14.69353143,14.57662679,14.45901969,14.34092167,14.22254545,14.10410451,13.98581277,13.86788419,13.7505324,13.63397038,13.51841002,13.40406182,13.29113448,13.17983459,13.07036625,12.96293073,12.85772613,12.75494707,12.65478437,12.5574247,12.46305033,12.37183882,12.28396274,12.19958942,12.11888068,12.04199263,11.96907538,11.90027291,11.83572283,11.77555622,11.71989742,11.66886399,11.62256644,11.58110824,11.54458563,11.5130876,11.48669578,11.46548441,11.44952027,11.43886273,11.43356365,11.43366747,11.43921117,11.45022437,11.46672929,11.48874091,11.51626696,11.54930806,11.5878578,11.63190283,11.68142298,11.73639142,11.79677474,11.86253312,11.93362047,12.00998459,12.0915673,12.17830464,12.270127,12.36695932,12.46872121,12.5753272,12.68668683,12.80270487,12.9232815,13.04831242,13.17768909,13.31129887,13.44902516,13.59074758,13.73634216,13.88568141,14.03863457,14.19506765,14.35484366,14.51782268,14.68386203,14.85281636,15.02453778,15.19887599,15.37567836,15.55479004,15.73605405,15.91931139,16.10440113,16.29116043,16.47942472,16.66902768,16.85980136,17.05157624,17.24418129,17.43744403,17.63119061,17.82524583,18.01943325,18.21357521,18.40749293,18.60100653,18.79393512,18.98609684,19.17730899,19.36738801,19.55614964,19.74340897,19.92898051,20.11267831,20.29431604,20.4737071,20.65066474,20.82500218,20.99653271,21.16506987,21.33042755,21.49242019,21.6508629,21.80557162,21.95636337,22.10305637,22.24547025,22.38342628,22.51674756,22.64525925,22.76878882,22.88716624,23.00022431,23.10779881,23.20972883,23.30585704,23.39602991,23.48009804,23.5579164,23.62934463,23.69424736,23.75249443,23.80396124,23.848529,23.88608506,23.91652314,23.93974367,23.95565403,23.96416888,23.96521035,23.95870837,23.9446009,23.92283419,23.89336298,23.8561508,23.81117009,23.75840249,23.69783897,23.62948003,23.55333586,23.46942647,23.37778182,23.27844192,23.17145693,23.05688725,22.93480352,22.80528669,22.668428,22.52432898,22.37310145,22.2148674,22.04975896,21.87791825,21.69949734,21.51465802,21.32357167,21.12641906,20.92339017,20.71468391,20.50050789,20.28107813,20.0566188,19.82736185,19.59354671,19.35541995,19.11323487,18.86725112,18.61773434,18.36495567,18.10919139,17.85072242,17.5898339,17.32681467,17.06195688,16.7955554,16.52790743,16.25931191,15.99006909,15.72047998,15.45084586,15.18146776,14.91264597,14.64467954,14.37786574,14.1124996,13.84887342,13.58727626,13.32799349,13.0713063];
- 
+
 let DELTA_DEG_RAW = DEFAULT_DATA.slice();
- 
+
 // ─── Parsing du textarea ───────────────────────────────────────────────────
 function parseData(str) {
   const tokens = str.trim().split(/[\s,;]+/).filter(s => s.length > 0);
@@ -605,13 +616,13 @@ function parseData(str) {
   if (nums.some(isNaN) || nums.length < 3) return null;
   return nums;
 }
- 
+
 function initTextarea() {
   const ta = document.getElementById('data-input');
   ta.value = DEFAULT_DATA.join(', ');
   document.getElementById('data-count').textContent = DEFAULT_DATA.length;
 }
- 
+
 document.getElementById('apply-data').addEventListener('click', () => {
   const ta = document.getElementById('data-input');
   const errEl = document.getElementById('data-err');
@@ -627,13 +638,13 @@ document.getElementById('apply-data').addEventListener('click', () => {
   document.getElementById('data-count').textContent = parsed.length;
   render();
 });
- 
+
 document.getElementById('data-input').addEventListener('input', () => {
   document.getElementById('data-input').classList.remove('error');
   document.getElementById('data-err').classList.remove('visible');
 });
- 
- 
+
+
 // ─── Lissage gaussien périodique ───────────────────────────────────────────
 function gaussFilter(arr, sigma) {
   const r = Math.round(sigma * 3), n = arr.length, out = new Float64Array(n);
@@ -648,7 +659,7 @@ function gaussFilter(arr, sigma) {
   }
   return out;
 }
- 
+
 // ─── Interpolation linéaire périodique ────────────────────────────────────
 function interp(arr, t) {
   const n = arr.length;
@@ -656,10 +667,11 @@ function interp(arr, t) {
   const i0 = Math.floor(idx) % n, i1 = (i0 + 1) % n;
   return arr[i0] + (arr[i1] - arr[i0]) * (idx - i0);
 }
- 
+
 // ─── Calcul du profil ──────────────────────────────────────────────────────
 function computeProfile(params) {
-  const { ratio, offsetDeg, rGalet, ROA, galetInt } = params;
+  const { ratio, offsetDeg, rGalet, ROA, galetInt, phaseOffsetDeg } = params;
+  const phaseRad = (phaseOffsetDeg || 0) * Math.PI / 180;
   const phi = Math.PI;
   const N = DELTA_DEG_RAW.length;
   // → on multiplie par ratio, puis on ajoute l'offset
@@ -668,7 +680,7 @@ function computeProfile(params) {
     rawRad[i] = (DELTA_DEG_RAW[i] * ratio + offsetDeg) * Math.PI / 180;
   }
   const smoothed = gaussFilter(rawRad, 2);
- 
+
   const M = 1000;
   const Bx = new Float64Array(M), By = new Float64Array(M);
   const Px = new Float64Array(M), Py = new Float64Array(M);
@@ -677,46 +689,46 @@ function computeProfile(params) {
   const AxArr = new Float64Array(M), AyArr = new Float64Array(M);
   const dt = 0.05;
   let Rmin = Infinity;
- 
+
   for (let i = 0; i < M; i++) {
     const t = (i / M) * 2 * Math.PI;
-    const d = interp(smoothed, t);
- 
+    const d = interp(smoothed, t + phaseRad);  // phase décale la came par rapport à la manivelle
+
     const Ax = ROA * Math.cos(t), Ay = ROA * Math.sin(t);
     AxArr[i] = Ax; AyArr[i] = Ay;
     const bx = Ax + ROA * Math.cos(t + d + phi);
     const by = Ay + ROA * Math.sin(t + d + phi);
     Bx[i] = bx; By[i] = by;
- 
+
     // Dérivées numériques pour la courbure
-    const t1 = t + dt, d1 = interp(smoothed, t1);
+    const t1 = t + dt, d1 = interp(smoothed, t1 + phaseRad);
     const bx1 = ROA*Math.cos(t1) + ROA*Math.cos(t1+d1+phi);
     const by1 = ROA*Math.sin(t1) + ROA*Math.sin(t1+d1+phi);
-    const t0 = t - dt, d0 = interp(smoothed, t0);
+    const t0 = t - dt, d0 = interp(smoothed, t0 + phaseRad);
     const bx0 = ROA*Math.cos(t0) + ROA*Math.cos(t0+d0+phi);
     const by0 = ROA*Math.sin(t0) + ROA*Math.sin(t0+d0+phi);
- 
+
     const tx = (bx1 - bx0) / (2*dt), ty = (by1 - by0) / (2*dt);
     const tnorm = Math.sqrt(tx*tx + ty*ty);
     const ax = (bx1 - 2*bx + bx0) / (dt*dt), ay = (by1 - 2*by + by0) / (dt*dt);
     const curv = (tx*ay - ty*ax) / Math.pow(tnorm, 3);
     const rc = Math.abs(1 / curv);
     if (isFinite(rc) && rc < Rmin) Rmin = rc;
- 
+
     // Offset galet (normal à la courbe)
     const nx = ty / tnorm, ny = -tx / tnorm;
     const sgn = galetInt ? 1 : -1;
     const px = bx + sgn * rGalet * nx;
     const py = by + sgn * rGalet * ny;
     Px[i] = px; Py[i] = py;
- 
+
     // Rotation dans le repère came
     BxC[i] =  bx * Math.cos(t) + by * Math.sin(t);
     ByC[i] = -bx * Math.sin(t) + by * Math.cos(t);
     PxC[i] =  px * Math.cos(t) + py * Math.sin(t);
     PyC[i] = -px * Math.sin(t) + py * Math.cos(t);
   }
- 
+
   const rawDeg = Array.from(rawRad).map(v => v * 180 / Math.PI);
   return {
     Bx, By, Px, Py, BxC, ByC, PxC, PyC,
@@ -726,18 +738,18 @@ function computeProfile(params) {
     Rmin, M
   };
 }
- 
+
 // ─── Dessin ────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('cam');
 const ctx = canvas.getContext('2d');
- 
+
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
   canvas.width  = rect.width  * devicePixelRatio;
   canvas.height = Math.round(rect.width * 0.80) * devicePixelRatio;
   canvas.style.height = Math.round(rect.width * 0.80) + 'px';
 }
- 
+
 function makeScale(xs, ys, ox, oy, w, h, pad) {
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
@@ -745,7 +757,7 @@ function makeScale(xs, ys, ox, oy, w, h, pad) {
   const sc = Math.min((w - 2*pad) / rX, (h - 2*pad) / rY);
   return { sc, cx: (minX+maxX)/2, cy: (minY+maxY)/2, ox, oy };
 }
- 
+
 function drawPoly(sc, xs, ys, color, lw) {
   ctx.beginPath();
   for (let i = 0; i < xs.length; i++) {
@@ -758,7 +770,7 @@ function drawPoly(sc, xs, ys, color, lw) {
   ctx.lineWidth = lw;
   ctx.stroke();
 }
- 
+
 function render() {
   const ratio     = parseFloat(document.getElementById('ratio').value);
   const offsetDeg = parseFloat(document.getElementById('offset').value);
@@ -766,7 +778,8 @@ function render() {
   const ROA       = parseFloat(document.getElementById('roa').value);
   const galetInt  = document.getElementById('galet-int').checked;
   const showCtr   = document.getElementById('show-center').checked;
- 
+  const phaseOffsetDeg = parseFloat(document.getElementById('phase-cam').value);
+
   // Mise à jour labels sliders (inputs numériques)
   document.getElementById('ratio-num').value    = ratio.toFixed(2);
   document.getElementById('offset-num').value   = offsetDeg.toFixed(1);
@@ -774,11 +787,12 @@ function render() {
   document.getElementById('roa-num').value      = ROA.toFixed(1);
   const camAngleDeg0 = parseFloat(document.getElementById('cam-angle').value);
   document.getElementById('cam-angle-num').value = camAngleDeg0.toFixed(0);
+  document.getElementById('phase-cam-num').value = phaseOffsetDeg.toFixed(1);
   const zoom = parseFloat(document.getElementById('zoom').value);
   document.getElementById('zoom-num').value     = zoom.toFixed(2);
- 
-  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
- 
+
+  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt, phaseOffsetDeg });
+
   // Stats
   document.getElementById('dmin').textContent = p.dMin.toFixed(2) + '°';
   document.getElementById('dmax').textContent = p.dMax.toFixed(2) + '°';
@@ -787,7 +801,7 @@ function render() {
   rcEl.textContent = isFinite(p.Rmin) ? p.Rmin.toFixed(2) + ' mm' : '∞';
   rcEl.className   = 'stat-val' + (p.Rmin < rGalet ? ' warn' : '');
   document.getElementById('warn-banner').classList.toggle('visible', p.Rmin < rGalet);
- 
+
   // Angle AB ∧ AO à l'angle came courant
   {
     const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
@@ -803,12 +817,12 @@ function render() {
     const angleDeg = Math.atan2(cross, dot) * 180 / Math.PI;
     document.getElementById('angle-abao').textContent = angleDeg.toFixed(2) + '°';
   }
- 
+
   // ── Dessin ──────────────────────────────────────────────────────────────
   const W = canvas.width, H = canvas.height;
   const dpr = devicePixelRatio;
   ctx.clearRect(0, 0, W, H);
- 
+
   const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const gridColor  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
   const dotColor   = isDark ? '#aaa' : '#444';
@@ -817,19 +831,19 @@ function render() {
   const cLever     = isDark ? '#55C97A' : '#1E8A42';
   const cCrank     = isDark ? 'rgba(160,160,160,0.6)' : 'rgba(90,90,90,0.5)';
   const pad        = 44 * dpr;
- 
+
   // Bounding box : came + origine O + positions du pivot A
   const allX = [...p.Bx, ...p.Px, ...p.AxArr, 0];
   const allY = [...p.By, ...p.Py, ...p.AyArr, 0];
   const sc = makeScale(allX, allY, W/2, H/2, W, H, pad);
   sc.sc *= zoom; // applique le zoom
- 
+
   // Helpers coordonnées écran
   function toS(x, y) {
     return [sc.ox + (x - sc.cx) * sc.sc,
             sc.oy - (y - sc.cy) * sc.sc];
   }
- 
+
   // Axes croisés
   ctx.strokeStyle = gridColor;
   ctx.lineWidth = 0.5 * dpr;
@@ -837,7 +851,7 @@ function render() {
   ctx.moveTo(pad, sc.oy); ctx.lineTo(W - pad, sc.oy);
   ctx.moveTo(sc.ox, pad); ctx.lineTo(sc.ox, H - pad);
   ctx.stroke();
- 
+
   // ── Fantômes du levier toutes les 45° ──────────────────────────────────
   const nGhost = 12;
   for (let g = 0; g < nGhost; g++) {
@@ -848,7 +862,7 @@ function render() {
     const [ox, oy] = toS(0, 0);
     const [asx, asy] = toS(ax, ay);
     const [bsx, bsy] = toS(bx, by);
- 
+
     ctx.globalAlpha = 0.18;
     ctx.strokeStyle = isDark ? '#aaaaaa' : '#666666';
     ctx.lineWidth = 1.2 * dpr;
@@ -857,18 +871,18 @@ function render() {
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(asx, asy); ctx.stroke();
     ctx.setLineDash([]);
     ctx.beginPath(); ctx.moveTo(asx, asy); ctx.lineTo(bsx, bsy); ctx.stroke();
- 
+
     if (rGalet > 0) {
       const rPx = rGalet * sc.sc;
       ctx.beginPath(); ctx.arc(bsx, bsy, rPx, 0, 2*Math.PI); ctx.stroke();
     }
     ctx.globalAlpha = 1;
   }
- 
+
   // ── Profils came (centre galet bleu + profil usinable rouge) ───────────
   if (showCtr) drawPoly(sc, p.Bx, p.By, cAccent, 1 * dpr);
   drawPoly(sc, p.Px, p.Py, cProfile, 1 * dpr);
- 
+
   // ── Levier à l'angle courant ────────────────────────────────────────────
   const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
   const tCur  = (camAngleDeg / 360) * 2 * Math.PI;
@@ -878,7 +892,7 @@ function render() {
   const [ox0, oy0]   = toS(0,   0);
   const [axS, ayS]   = toS(axC, ayC);
   const [bxS, byS]   = toS(bxC, byC);
- 
+
   // Bras de manivelle O→A (pointillés fins)
   ctx.strokeStyle = cCrank;
   ctx.lineWidth   = 1 * dpr;
@@ -886,12 +900,12 @@ function render() {
   ctx.setLineDash([5*dpr, 4*dpr]);
   ctx.beginPath(); ctx.moveTo(ox0, oy0); ctx.lineTo(axS, ayS); ctx.stroke();
   ctx.setLineDash([]);
- 
+
   // Bras palpeur A→B (levier — trait plein épais)
   ctx.strokeStyle = cLever;
   ctx.lineWidth   = 1 * dpr;
   ctx.beginPath(); ctx.moveTo(axS, ayS); ctx.lineTo(bxS, byS); ctx.stroke();
- 
+
   // Galet (cercle au point B)
   if (rGalet > 0) {
     const rPx = rGalet * sc.sc;
@@ -899,7 +913,7 @@ function render() {
     ctx.lineWidth = 1 * dpr;
     ctx.beginPath(); ctx.arc(bxS, byS, rPx, 0, 2*Math.PI); ctx.stroke();
   }
- 
+
   // Pivots : O (pivot fixe), A (pivot intermédiaire), B (centre galet)
   const pivotDef = [
     { pos: [0, 0],   r: 2*dpr, fill: dotColor,  stroke: null },
@@ -911,7 +925,7 @@ function render() {
     ctx.beginPath(); ctx.arc(sx, sy, r, 0, 2*Math.PI);
     ctx.fillStyle = fill; ctx.fill();
   });
- 
+
   // Labels O et B
   ctx.font = `${11*dpr}px 'Segoe UI', system-ui, sans-serif`;
   ctx.fillStyle = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
@@ -919,11 +933,11 @@ function render() {
   ctx.fillText('O', ox0 + 7*dpr, oy0 - 4*dpr);
   ctx.fillText('A', axS + 6*dpr, ayS - 4*dpr);
   ctx.fillStyle = cLever;
- 
+
   // Échelle graphique
   drawScaleBar(sc, W, H, pad, dpr, isDark);
 }
- 
+
 function drawScaleBar(sc, W, H, pad, dpr, isDark) {
   const targetPx = W * 0.12;
   const rawMm = targetPx / sc.sc;
@@ -932,30 +946,30 @@ function drawScaleBar(sc, W, H, pad, dpr, isDark) {
   let niceMm = steps.find(s => s * mag >= rawMm * 0.8) * mag;
   if (!niceMm) niceMm = mag * 100;
   const barPx = niceMm * sc.sc;
- 
+
   const x1 = pad + 6 * dpr;
   const x2 = x1 + barPx;
   const y  = H - pad * 0.6;
- 
+
   const textColor = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)';
   const lineColor = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.3)';
   const tickH = 5 * dpr;
- 
+
   ctx.strokeStyle = lineColor;
   ctx.lineWidth = 1.5 * dpr;
   ctx.lineCap = 'round';
- 
+
   // Ligne principale
   ctx.beginPath();
   ctx.moveTo(x1, y); ctx.lineTo(x2, y);
   ctx.stroke();
- 
+
   // Ticks aux extrémités
   ctx.beginPath();
   ctx.moveTo(x1, y - tickH); ctx.lineTo(x1, y + tickH);
   ctx.moveTo(x2, y - tickH); ctx.lineTo(x2, y + tickH);
   ctx.stroke();
- 
+
   // Label
   ctx.fillStyle = textColor;
   ctx.font = `${11 * dpr}px 'Segoe UI', system-ui, sans-serif`;
@@ -971,8 +985,9 @@ document.getElementById('export-svg').addEventListener('click', () => {
   const rGalet = parseFloat(document.getElementById('rgalet').value);
   const ROA = parseFloat(document.getElementById('roa').value);
   const galetInt = document.getElementById('galet-int').checked;
+  const phaseOffsetDeg = parseFloat(document.getElementById('phase-cam').value);
   
-  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
+  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt, phaseOffsetDeg });
   
   // On utilise p.Px et p.Py pour le repère fixe
   let pathD = `M ${p.Px[0].toFixed(3)} ${p.Py[0].toFixed(3)}`;
@@ -980,7 +995,7 @@ document.getElementById('export-svg').addEventListener('click', () => {
     pathD += ` L ${p.Px[i].toFixed(3)} ${p.Py[i].toFixed(3)}`;
   }
   pathD += " Z";
- 
+
   // Note : On inverse le signe de Y dans le SVG (Py) car l'axe Y du SVG pointe vers le bas
   // Pour que le dessin soit identique à l'écran, on applique une transformation
   const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300">
@@ -990,7 +1005,7 @@ document.getElementById('export-svg').addEventListener('click', () => {
     </g>
     <text x="5" y="15" font-family="sans-serif" font-size="5" fill="black">Origine O</text>
   </svg>`;
- 
+
   const blob = new Blob([svgContent], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1016,8 +1031,9 @@ document.getElementById('export-png').addEventListener('click', () => {
   const showCtr = document.getElementById('show-center').checked;
   const zoom = parseFloat(document.getElementById('zoom').value);
   const camAngleDeg = parseFloat(document.getElementById('cam-angle').value);
+  const phaseOffsetDeg = parseFloat(document.getElementById('phase-cam').value);
   
-  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
+  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt, phaseOffsetDeg });
   const W = offCanvas.width, H = offCanvas.height;
   const dpr = devicePixelRatio * scaleFactor;
   
@@ -1036,13 +1052,13 @@ document.getElementById('export-png').addEventListener('click', () => {
   
   const sc = { sc: baseSc, cx: (minX+maxX)/2, cy: (minY+maxY)/2, ox: W/2, oy: H/2 };
   const toS = (x, y) => [sc.ox + (x - sc.cx) * sc.sc, sc.oy - (y - sc.cy) * sc.sc];
- 
+
   // Couleurs export
   const cAccent = '#378ADD';
   const cProfile = '#D85A30';
   const cLever = '#1E8A42';
   const cCrank = '#666666';
- 
+
   // 1. Profils de la came
   const drawPolyOff = (xs, ys, color, lw) => {
     offCtx.beginPath();
@@ -1055,36 +1071,36 @@ document.getElementById('export-png').addEventListener('click', () => {
     offCtx.lineWidth = lw * scaleFactor;
     offCtx.stroke();
   };
- 
+
   if (showCtr) drawPolyOff(p.Bx, p.By, cAccent, 1);
   drawPolyOff(p.Px, p.Py, cProfile, 1.5);
- 
+
   // 2. Dessin du mécanisme à l'angle choisi
   const tCur = (camAngleDeg / 360) * 2 * Math.PI;
   const iCur = Math.round((tCur / (2 * Math.PI)) * p.M) % p.M;
   const [oxS, oyS] = toS(0, 0);
   const [axS, ayS] = toS(p.AxArr[iCur], p.AyArr[iCur]);
   const [bxS, byS] = toS(p.Bx[iCur], p.By[iCur]);
- 
+
   // Bras OA (Manivelle)
   offCtx.setLineDash([1 * scaleFactor, 1 * scaleFactor]);
   offCtx.strokeStyle = cCrank;
   offCtx.lineWidth = 1 * scaleFactor;
   offCtx.beginPath(); offCtx.moveTo(oxS, oyS); offCtx.lineTo(axS, ayS); offCtx.stroke();
   offCtx.setLineDash([]);
- 
+
   // Bras AB (Levier)
   offCtx.strokeStyle = cLever;
   offCtx.lineWidth = 1 * scaleFactor;
   offCtx.beginPath(); offCtx.moveTo(axS, ayS); offCtx.lineTo(bxS, byS); offCtx.stroke();
- 
+
   // Galet
   if (rGalet > 0) {
     offCtx.beginPath();
     offCtx.arc(bxS, byS, rGalet * sc.sc, 0, 2 * Math.PI);
     offCtx.stroke();
   }
- 
+
   // Points pivots (O, A, B)
   const drawPoint = (x, y, color, r) => {
     offCtx.fillStyle = color;
@@ -1095,14 +1111,14 @@ document.getElementById('export-png').addEventListener('click', () => {
   drawPoint(oxS, oyS, "#000000", 2); // Centre O
   drawPoint(axS, ayS, cCrank, 2);   // Pivot A
   drawPoint(bxS, byS, cLever, 2);   // Centre galet B
- 
+
   // 3. Échelle et Labels
   drawScaleBar(sc, W, H, pad, dpr, false);
   
   offCtx.fillStyle = "#666666";
   offCtx.font = `${12 * scaleFactor}px Arial`;
   offCtx.fillText("O", oxS + 8, oyS - 8);
- 
+
   // Téléchargement
   const link = document.createElement('a');
   link.download = `came_profil_angle_${camAngleDeg}deg.png`;
@@ -1111,26 +1127,27 @@ document.getElementById('export-png').addEventListener('click', () => {
 });
 // ─── Export DXF (TRACÉ ROUGE FIXE + ORIGINE) ──────────────────────────────
 document.getElementById('export-csv').innerText = "Exporter DXF (SolidWorks)";
- 
+
 document.getElementById('export-csv').addEventListener('click', () => {
   const ratio     = parseFloat(document.getElementById('ratio').value);
   const offsetDeg = parseFloat(document.getElementById('offset').value);
   const rGalet    = parseFloat(document.getElementById('rgalet').value);
   const ROA       = parseFloat(document.getElementById('roa').value);
   const galetInt  = document.getElementById('galet-int').checked;
+  const phaseOffsetDeg = parseFloat(document.getElementById('phase-cam').value);
   
-  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt });
- 
+  const p = computeProfile({ ratio, offsetDeg, rGalet, ROA, galetInt, phaseOffsetDeg });
+
   // Entête standard DXF
   let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
- 
+
   // 1. AJOUT DU POINT D'ORIGINE (Cercle de rayon 1mm à 0,0)
   dxf += "0\nCIRCLE\n8\nAXE_ROTATION\n"; // Sur un calque nommé AXE_ROTATION
   dxf += "10\n0.0\n"; // X centre
   dxf += "20\n0.0\n"; // Y centre
   dxf += "30\n0.0\n"; // Z centre
   dxf += "40\n1.0\n"; // Rayon (1mm)
- 
+
   // 2. TRACÉ DU PROFIL ROUGE (Px, Py)
   for (let i = 0; i < p.Px.length; i++) {
     const next = (i + 1) % p.Px.length;
@@ -1142,10 +1159,10 @@ document.getElementById('export-csv').addEventListener('click', () => {
     dxf += `21\n${(-p.Py[next]).toFixed(4)}\n`; // Y arrivée
     dxf += `31\n0.0\n`;
   }
- 
+
   // Pied de page DXF
   dxf += "0\nENDSEC\n0\nEOF";
- 
+
   const blob = new Blob([dxf], { type: 'application/dxf' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -1154,19 +1171,19 @@ document.getElementById('export-csv').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
 });
- 
+
 // ─── Init ──────────────────────────────────────────────────────────────────
 // ─── Synchronisation sliders ↔ inputs numériques ──────────────────────────
 function linkSliderNum(sliderId) {
   const slider = document.getElementById(sliderId);
   const num    = document.getElementById(sliderId + '-num');
   if (!slider || !num) return;
- 
+
   slider.addEventListener('input', () => {
     num.value = slider.value;
     render();
   });
- 
+
   const applyNum = () => {
     let v = parseFloat(num.value);
     if (isNaN(v)) return;
@@ -1175,17 +1192,17 @@ function linkSliderNum(sliderId) {
     num.value = v;
     render();
   };
- 
+
   num.addEventListener('change', applyNum);
   num.addEventListener('keydown', e => { if (e.key === 'Enter') { applyNum(); num.blur(); } });
 }
- 
-['ratio','offset','rgalet','roa','cam-angle','zoom'].forEach(linkSliderNum);
- 
+
+['ratio','offset','rgalet','roa','cam-angle','phase-cam','zoom'].forEach(linkSliderNum);
+
 ['galet-int','show-center'].forEach(id =>
   document.getElementById(id).addEventListener('change', render)
 );
- 
+
 initTextarea();
 resizeCanvas();
 render();
