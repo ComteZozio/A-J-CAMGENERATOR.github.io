@@ -1,0 +1,368 @@
+
+<style>
+  .container { padding: 1.5rem 0; max-width: 680px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field label { font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 1.5rem; }
+  .card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .card .lbl { font-size: 12px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .card .val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .card .sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .info-row { font-size: 13px; color: var(--color-text-secondary); margin-top: 1rem; line-height: 1.6; }
+  .tag { display: inline-block; background: var(--color-background-info); color: var(--color-text-info); font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); margin-right: 4px; }
+  .no-sun { background: var(--color-background-warning); color: var(--color-text-warning); border-radius: var(--border-radius-md); padding: .75rem 1rem; font-size: 14px; margin-top: 1.5rem; }
+  .year-chart { margin-top: 1.5rem; position: relative; height: 180px; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 1.5rem 0 .5rem; }
+  .table-container { 
+    margin-top: 2rem; 
+    max-height: 400px; 
+    overflow-y: auto; 
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+  th { position: sticky; top: 0; background: var(--color-background-secondary); color: var(--color-text-secondary); font-weight: 500; padding: 10px; border-bottom: 1px solid var(--color-border); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--color-background-secondary); color: var(--color-text-primary); }
+  tr:hover { background: var(--color-background-info-subtle); }
+  .month-row { background: var(--color-background-secondary); font-weight: bold; color: var(--color-text-info); }
+</style>
+<div style="margin-bottom: 1rem;">
+  <a href="index.html" style="text-decoration: none; padding: 8px 12px; background: #D85A30; color: white; border-radius: 6px; font-size: 13px; font-weight: 600;">
+    ← Retour au Concepteur de Came
+  </a>
+</div>
+<div class="container">
+  <div class="grid2">
+    <div class="field">
+      <label>Latitude (°)</label>
+      <input type="number" id="lat" value="49.05" min="-90" max="90" step="0.01" style="width:100%">
+    </div>
+    <div class="field">
+      <label>Longitude (°)</label>
+      <input type="number" id="lng" value="2.08" min="-180" max="180" step="0.01" style="width:100%">
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="dt" style="width:100%">
+    </div>
+    <div class="field">
+      <label>Zenith (° depuis le nadir)</label>
+      <select id="zenith" style="width:100%">
+        <option value="90.833">Lever officiel (90°50')</option>
+        <option value="96">Civil (96°)</option>
+        <option value="102">Nautique (102°)</option>
+        <option value="108">Astronomique (108°)</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="result-area"></div>
+  <div class="section-title">Variation sur l'année (heure solaire)</div>
+  <div class="year-chart"><canvas id="yearChart"></canvas></div>
+  <div class="section-title">Calendrier annuel (heure solaire)</div>
+  <div class="table-container">
+    <table id="year-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Lever</th>
+          <th>Midi</th>
+          <th>Coucher</th>
+          <th>Durée</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="card" style="margin-top: 2rem; border-top: 2px solid var(--color-text-info);">
+  <div class="lbl">Export pour Concepteur de Came ( durée du jour solaire vrai ) </div>
+  <p class="sub">Copiez ces données et collez-les dans l'outil de conception de cames :</p>
+  <textarea id="export-text-area" readonly 
+    style="width: 100%; height: 80px; margin-top: 10px; font-family: monospace; font-size: 12px; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--color-background-primary); color: var(--color-text-primary);">
+  </textarea>
+  <button onclick="copyToClipboard()" id="copy-btn" class="btn" style="margin-top: 8px; width: 100%;">
+    Copier les données
+  </button>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const pad = n => String(Math.floor(n)).padStart(2,'0');
+const fmtTime = dec => {
+  if (dec === null) return null;
+  let h = dec % 24; if (h < 0) h += 24;
+  const hh = Math.floor(h), mm = Math.round((h - hh)*60);
+  return pad(hh) + ':' + pad(mm);
+};
+
+function toJD(year, month, day) {
+  if (month <= 2) { year--; month += 12; }
+  const A = Math.floor(year/100);
+  const B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(year+4716)) + Math.floor(30.6001*(month+1)) + day + B - 1524.5;
+}
+
+function sunriseSunset(lat, lng, year, month, day, zenithDeg) {
+  const toRad = d => d * Math.PI / 180;
+  const toDeg = r => r * 180 / Math.PI;
+  const zenith = zenithDeg;
+
+  function calc(rising) {
+    const N = toJD(year, month, day) - toJD(2000,1,1) + 0.5;
+    const lngHour = lng / 15;
+    const t = rising ? N + (6 - lngHour)/24 : N + (18 - lngHour)/24;
+    const M = (0.9856 * t - 3.289) % 360;
+    let L = M + (1.916 * Math.sin(toRad(M))) + (0.020 * Math.sin(toRad(2*M))) + 282.634;
+    L = ((L % 360) + 360) % 360;
+    let RA = toDeg(Math.atan(0.91764 * Math.tan(toRad(L))));
+    RA = ((RA % 360) + 360) % 360;
+    const Lquad = Math.floor(L/90)*90;
+    const RAquad = Math.floor(RA/90)*90;
+    RA = (RA + Lquad - RAquad) / 15;
+    const sinDec = 0.39782 * Math.sin(toRad(L));
+    const cosDec = Math.cos(Math.asin(sinDec));
+    const cosH = (Math.cos(toRad(zenith)) - (sinDec * Math.sin(toRad(lat)))) / (cosDec * Math.cos(toRad(lat)));
+    if (cosH > 1) return { time: null, polar: 'no-rise' };
+    if (cosH < -1) return { time: null, polar: 'no-set' };
+    let H = rising ? (360 - toDeg(Math.acos(cosH))) : toDeg(Math.acos(cosH));
+    H /= 15;
+    const T = H + RA - (0.06571 * t) - 6.622;
+    let UT = T - lngHour;
+    UT = ((UT % 24) + 24) % 24;
+    // Convert UTC to solar time: solar time = UTC + lng/15
+    const solarTime = (UT + lng/15 + 24) % 24;
+    return { time: solarTime, polar: null };
+  }
+
+  const rise = calc(true);
+  const set  = calc(false);
+  return { rise, set };
+}
+
+function getEqOfTime(year, month, day) {
+  const N = toJD(year, month, day) - toJD(2000,1,1) + 0.5;
+  const M = ((0.9856 * N - 3.289) % 360 + 360) % 360;
+  const toRad = d => d * Math.PI / 180;
+  let L = M + 1.916*Math.sin(toRad(M)) + 0.020*Math.sin(toRad(2*M)) + 282.634;
+  L = ((L % 360) + 360) % 360;
+  const RA = ((Math.atan2(Math.cos(toRad(23.439)) * Math.sin(toRad(L)), Math.cos(toRad(L))) * 180 / Math.PI) + 360) % 360;
+  const EqT = (L - RA) / 15;
+  return EqT;
+}
+
+let yearChart = null;
+
+function compute() {
+  const lat = parseFloat(document.getElementById('lat').value);
+  const lng = parseFloat(document.getElementById('lng').value);
+  const dt  = document.getElementById('dt').value;
+  const zenith = parseFloat(document.getElementById('zenith').value);
+  if (!dt || isNaN(lat) || isNaN(lng)) return;
+  const [y, m, d] = dt.split('-').map(Number);
+  const { rise, set } = sunriseSunset(lat, lng, y, m, d, zenith);
+
+  let html = '';
+  if (rise.polar === 'no-rise') {
+    html = `<div class="no-sun">☀ Le soleil ne se lève pas ce jour à cette latitude (nuit polaire ou été polaire selon le cas).</div>`;
+  } else {
+    const riseStr = fmtTime(rise.time);
+    const setStr  = fmtTime(set.time);
+    const noon    = '12:00';
+    let duration  = null;
+    if (rise.time !== null && set.time !== null) {
+      let dur = set.time - rise.time;
+      if (dur < 0) dur += 24;
+      duration = pad(Math.floor(dur)) + 'h ' + pad(Math.round((dur - Math.floor(dur))*60)) + 'min';
+    }
+    const eqt = getEqOfTime(y, m, d);
+    const eqtMin = Math.round(eqt * 60);
+    const sign = eqtMin >= 0 ? '+' : '';
+
+    html = `<div class="result-grid">
+      <div class="card">
+        <div class="lbl">Lever</div>
+        <div class="val">${riseStr}</div>
+        <div class="sub">heure solaire vraie</div>
+      </div>
+      <div class="card">
+        <div class="lbl">Midi solaire</div>
+        <div class="val">12:00</div>
+        <div class="sub">par définition</div>
+      </div>
+      <div class="card">
+        <div class="lbl">Coucher</div>
+        <div class="val">${setStr}</div>
+        <div class="sub">heure solaire vraie</div>
+      </div>
+    </div>
+    <div class="info-row">
+      <span class="tag">Durée du jour</span>${duration || '—'}
+      &nbsp;&nbsp;
+      <span class="tag">Équation du temps</span>${sign}${eqtMin} min ce jour
+      &nbsp;&nbsp;
+      <span class="tag">Latitude</span>${lat.toFixed(2)}°
+    </div>
+    <div class="info-row" style="color: var(--color-text-tertiary); font-size: 12px;">
+      En heure solaire vraie, le Soleil culmine toujours à 12 h 00 exactement. Le lever et coucher sont symétriques autour de midi.
+    </div>`;
+  }
+  document.getElementById('result-area').innerHTML = html;
+  updateYearChart(lat, lng, zenith, y);
+  updateYearTable(lat, lng, zenith, y);
+}
+
+function updateYearChart(lat, lng, zenith, year) {
+  const labels = [], riseData = [], setData = [], durData = [];
+  for (let doy = 1; doy <= 365; doy += 5) {
+    const d = new Date(year, 0, doy);
+    const y = d.getFullYear(), m = d.getMonth()+1, day = d.getDate();
+    const label = d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+    const { rise, set } = sunriseSunset(lat, lng, y, m, day, zenith);
+    labels.push(label);
+    riseData.push(rise.time !== null ? parseFloat(rise.time.toFixed(3)) : null);
+    setData.push(set.time !== null ? parseFloat(set.time.toFixed(3)) : null);
+    if (rise.time !== null && set.time !== null) {
+      let dur = set.time - rise.time; if (dur < 0) dur += 24;
+      durData.push(parseFloat(dur.toFixed(3)));
+    } else { durData.push(null); }
+  }
+
+  const ctx = document.getElementById('yearChart').getContext('2d');
+  if (yearChart) yearChart.destroy();
+  yearChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Lever', data: riseData, borderColor: '#EF9F27', backgroundColor: 'transparent', pointRadius: 0, borderWidth: 1.5, tension: 0.4 },
+        { label: 'Coucher', data: setData, borderColor: '#378ADD', backgroundColor: 'transparent', pointRadius: 0, borderWidth: 1.5, tension: 0.4 },
+        { label: 'Durée', data: durData, borderColor: '#1D9E75', backgroundColor: 'transparent', pointRadius: 0, borderWidth: 1.5, tension: 0.4, yAxisID: 'y2' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: {
+          label: ctx => {
+            const v = ctx.raw;
+            if (v === null) return ctx.dataset.label + ': —';
+            const h = Math.floor(v), m2 = Math.round((v-h)*60);
+            return ctx.dataset.label + ': ' + pad(h) + ':' + pad(m2);
+          }
+        }
+      }},
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { size: 11 }, color: '#888' }, grid: { display: false } },
+        y: { min: 0, max: 24, ticks: { stepSize: 6, callback: v => pad(v)+'h', font: { size: 11 }, color: '#888' }, grid: { color: 'rgba(128,128,128,.1)' } },
+        y2: { position: 'right', min: 0, max: 24, ticks: { stepSize: 6, callback: v => v+'h', font: { size: 11 }, color: '#1D9E75' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+const today = new Date();
+document.getElementById('dt').value = today.toISOString().slice(0,10);
+['lat','lng','dt','zenith'].forEach(id => document.getElementById(id).addEventListener('input', compute));
+compute();
+function updateYearTable(lat, lng, zenith, year) {
+  const tbody = document.querySelector('#year-table tbody');
+  tbody.innerHTML = '';
+  let currentMonth = -1;
+
+  // 366 pour couvrir les années bissextiles
+  for (let doy = 1; doy <= 366; doy++) {
+    const d = new Date(year, 0, doy);
+    if (d.getFullYear() !== year) break; 
+
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    
+    if (d.getMonth() !== currentMonth) {
+      currentMonth = d.getMonth();
+      const monthName = d.toLocaleDateString('fr-FR', { month: 'long' }).toUpperCase();
+      const monthRow = document.createElement('tr');
+      monthRow.className = 'month-row';
+      // On rappelle l'année dans la barre de séparation du mois pour plus de clarté
+      monthRow.innerHTML = `<td colspan="5">${monthName} ${year}</td>`;
+      tbody.appendChild(monthRow);
+    }
+
+    const { rise, set } = sunriseSunset(lat, lng, year, m, day, zenith);
+    
+    let duration = "—";
+    if (rise.time !== null && set.time !== null) {
+      let dur = set.time - rise.time;
+      if (dur < 0) dur += 24;
+      duration = Math.floor(dur) + 'h ' + pad(Math.round((dur - Math.floor(dur)) * 60));
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+      <td>${fmtTime(rise.time) || '—'}</td>
+      <td style="color: var(--color-text-tertiary);">12:00</td>
+      <td>${fmtTime(set.time) || '—'}</td>
+      <td><strong>${duration}</strong></td>
+    `;
+    tbody.appendChild(row);
+    updateExportArea();
+  }
+}
+function getSunriseList() {
+  const lat = parseFloat(document.getElementById('lat').value);
+  const zenith = parseFloat(document.getElementById('zenith').value);
+  const toRad = d => d * Math.PI / 180;
+  
+  let rawValues = [];
+
+  // 1. Collecte des heures solaires vraies pour les 365 jours
+  for (let doy = 1; doy <= 365; doy++) {
+    const B = toRad(360 / 365 * (doy - 81));
+    const declination = 23.45 * Math.sin(B);
+    
+    const cosH = (Math.cos(toRad(zenith)) - Math.sin(toRad(lat)) * Math.sin(toRad(declination))) / 
+                 (Math.cos(toRad(lat)) * Math.cos(toRad(declination)));
+    
+    let hourAngle;
+    if (cosH <= -1) hourAngle = 180; 
+    else if (cosH >= 1) hourAngle = 0; 
+    else hourAngle = Math.acos(cosH) * 180 / Math.PI;
+
+    const sunriseSolarTime = 12 - (hourAngle / 15);
+    rawValues.push(sunriseSolarTime);
+  }
+
+  // 2. Trouver la valeur minimale de la liste
+  const minValue = Math.min(...rawValues);
+
+  // 3. Soustraire le min et multiplier par 15
+  const finalValues = rawValues.map(v => ((v - minValue) * 15).toFixed(3));
+
+  return finalValues.join(', ');
+}
+// Fonction pour mettre à jour la zone de texte dès que les calculs sont faits
+function updateExportArea() {
+  const values = getSunriseList(); // Utilise votre fonction existante qui génère la liste
+  document.getElementById('export-text-area').value = values;
+}
+
+// Fonction pour copier le texte en un clic
+function copyToClipboard() {
+  const textArea = document.getElementById('export-text-area');
+  textArea.select();
+  document.execCommand('copy');
+  
+  const btn = document.getElementById('copy-btn');
+  const originalText = btn.innerText;
+  btn.innerText = "Copié !";
+  btn.style.background = "#28a745";
+  
+  setTimeout(() => {
+    btn.innerText = originalText;
+    btn.style.background = "";
+  }, 2000);
+}
+</script>
